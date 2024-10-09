@@ -1,5 +1,5 @@
 githubOwner = 'AccelByte'
-githubRepo = 'challenge-assignment-grpc-plugin-python'
+githubRepo = 'challenge-assignment-plugin-server-python'
 githubSsh = 'accelbyte-sdk-sdkbuild-ssh'
 
 githubUrl = "git@github.com:${githubOwner}/${githubRepo}.git"
