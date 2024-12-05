@@ -13,12 +13,24 @@ RUN protoc  \
     --python_out=src \
     assignment_function.proto
 
+
 # Extend App
-FROM python:3.9-slim-bullseye
-ARG TARGETOS
-ARG TARGETARCH
+FROM ubuntu:22.04
+
+RUN apt update && \
+    apt install -y python3-pip python-is-python3 && \
+    python -m pip install --no-cache-dir --upgrade pip && \
+    apt upgrade -y && \
+    apt dist-upgrade -y && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
+# Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
+
+# Install pip requirements
 WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN python -m pip install -r requirements.txt
@@ -30,4 +42,4 @@ EXPOSE 6565
 # Prometheus /metrics web server port
 EXPOSE 8080
 
-ENTRYPOINT python -m app
+ENTRYPOINT ["python", "-m", "app"]
