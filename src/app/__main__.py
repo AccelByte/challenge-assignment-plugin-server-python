@@ -24,6 +24,7 @@ from accelbyte_grpc_plugin.app import (
     AppOptionGRPCInterceptor,
     AppOptionGRPCService,
 )
+from accelbyte_grpc_plugin.utils import instrument_sdk_http_client
 
 from assignment_function_pb2_grpc import add_AssignmentFunctionServicer_to_server
 
@@ -52,10 +53,15 @@ async def main(**kwargs) -> None:
 
     port: int = env.int("PORT", DEFAULT_APP_PORT)
 
+    logger = logging.getLogger("app")
+    logger.setLevel(logging.INFO)
+    logger.addHandler(logging.StreamHandler())
+
     config = DictConfigRepository(dict(env.dump()))
     token = InMemoryTokenRepository()
     http = HttpxHttpClient()
     http.client.follow_redirects = True
+
     sdk = AccelByteSDK()
     sdk.initialize(
         options={
@@ -64,16 +70,16 @@ async def main(**kwargs) -> None:
             "http": http,
         }
     )
+
+    instrument_sdk_http_client(sdk=sdk, logger=logger)
+
     _, error = await auth_service.login_client_async(sdk=sdk)
     if error:
         raise Exception(str(error))
+
     sdk.timer = auth_service.LoginClientTimer(2880, repeats=-1, autostart=True, sdk=sdk)
 
-    logger = logging.getLogger("app")
-    logger.setLevel(logging.INFO)
-    logger.addHandler(logging.StreamHandler())
     options = create_options(sdk=sdk, env=env, logger=logger)
-
     options.append(
         AppOptionGRPCService(
             full_name=AsyncChallengeAssignmentService.full_name,
@@ -117,12 +123,8 @@ def create_options(sdk: AccelByteSDK, env: Env, logger: Logger) -> List[AppOptio
     with env.prefixed("PLUGIN_GRPC_SERVER_"):
         with env.prefixed("AUTH_"):
             if env.bool("ENABLED", DEFAULT_PLUGIN_GRPC_SERVER_AUTH_ENABLED):
-                from accelbyte_py_sdk.token_validation.caching import (
-                    CachingTokenValidator,
-                )
-                from accelbyte_grpc_plugin.interceptors.authorization import (
-                    AuthorizationServerInterceptor,
-                )
+                from accelbyte_py_sdk.token_validation.caching import CachingTokenValidator
+                from accelbyte_grpc_plugin.interceptors.authorization import AuthorizationServerInterceptor
 
                 options.append(
                     AppOptionGRPCInterceptor(
