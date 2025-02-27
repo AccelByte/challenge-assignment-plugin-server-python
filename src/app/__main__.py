@@ -1,4 +1,4 @@
-# Copyright (c) 2024 AccelByte Inc. All Rights Reserved.
+# Copyright (c) 2025 AccelByte Inc. All Rights Reserved.
 # This is licensed software from AccelByte Inc, for limitations
 # and restrictions contact your company contract manager.
 
@@ -6,7 +6,7 @@ import asyncio
 import logging
 
 from logging import Logger
-from typing import List, Optional
+from typing import List
 
 from accelbyte_py_sdk.core import (
     AccelByteSDK,
@@ -28,15 +28,13 @@ from accelbyte_grpc_plugin.utils import instrument_sdk_http_client
 
 from assignment_function_pb2_grpc import add_AssignmentFunctionServicer_to_server
 
-from app.services.challenge_assignment import AsyncChallengeAssignmentService
-from app.utils import create_env
+from .services.challenge_assignment import AsyncChallengeAssignmentService
+from .utils import create_env
 
 DEFAULT_APP_PORT: int = 6565
 
 DEFAULT_AB_BASE_URL: str = "https://test.accelbyte.io"
 DEFAULT_AB_NAMESPACE: str = "accelbyte"
-DEFAULT_AB_CLIENT_ID: Optional[str] = None
-DEFAULT_AB_CLIENT_SECRET: Optional[str] = None
 
 DEFAULT_ENABLE_HEALTH_CHECK: bool = True
 DEFAULT_ENABLE_PROMETHEUS: bool = True
