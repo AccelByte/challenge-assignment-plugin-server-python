@@ -1,15 +1,16 @@
-# Copyright (c) 2024 AccelByte Inc. All Rights Reserved.
+# Copyright (c) 2025 AccelByte Inc. All Rights Reserved.
 # This is licensed software from AccelByte Inc, for limitations
 # and restrictions contact your company contract manager.
 
 import json
 import random
-
 from logging import Logger
 from typing import Any, Optional
 
 from google.protobuf.json_format import MessageToDict
 from grpc import ServicerContext, StatusCode
+
+from accelbyte_py_sdk import AccelByteSDK
 
 from assignment_function_pb2 import (
     DESCRIPTOR,
@@ -22,7 +23,8 @@ from assignment_function_pb2_grpc import AssignmentFunctionServicer
 class AsyncChallengeAssignmentService(AssignmentFunctionServicer):
     full_name: str = DESCRIPTOR.services_by_name["AssignmentFunction"].full_name
 
-    def __init__(self, logger: Optional[Logger] = None) -> None:
+    def __init__(self, sdk: Optional[AccelByteSDK] = None, logger: Optional[Logger] = None) -> None:
+        self.sdk = sdk
         self.logger = logger
 
     async def Assign(
