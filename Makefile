@@ -7,8 +7,6 @@ SHELL := /bin/bash
 IMAGE_NAME ?= $(shell basename "$$(pwd)")-app
 BUILDER := challenge-assignment-plugin-server-builder
 
-TEST_SAMPLE_CONTAINER_NAME := challenge-assignment-plugin-server-test
-
 .PHONY: proto build
 
 proto:
